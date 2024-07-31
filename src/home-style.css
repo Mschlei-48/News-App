@@ -1,0 +1,15 @@
+.main-container{
+    display:grid;
+    grid-template-columns: 12rem 12rem 12rem 12rem;
+    grid-template-rows: 18rem 18rem;
+    grid-gap:4rem;
+    grid-auto-flow:row;
+    /* padding:2%; */
+    padding-bottom:32%;
+    padding-left:2%;
+    padding-right:2%;
+}
+img{
+    width:200px;
+    height:250px;
+}
