@@ -1,121 +1,96 @@
-import {useEffect, useState} from 'react'
-import axios from 'axios'
-// import {useEffect} from 'react'
-import './home-style.css'
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import './home-style.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBook } from '@fortawesome/free-solid-svg-icons';
+import { faFire } from '@fortawesome/free-solid-svg-icons';
 
-function Home(){
+function Home() {
+  const [increment, setIncrement] = useState(8);
+  const [data, setData] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [FilData, setFilData] = useState([]);
+  const [category, setCategory] = useState("All");
 
-    const [increment,setIncrement]=useState(8);
-    const [data,setData]=useState([])
-    const [properties,setProperties]=useState([])
-    const [FilData,setFilData]=useState([])
+  const getNews = async () => {
+    let response;
+    if (category === "All") {
+      response = await axios.get("https://newsapi.org/v2/everything?q=bitcoin&apiKey=1d807c8f424748758e9d8a09c2e30d80");
+    }
+     else if (category === "US-Ent") {
+      response = await axios.get("https://newsapi.org/v2/top-headlines?country=us&category=entertainment&apiKey=1d807c8f424748758e9d8a09c2e30d80");
+    }
+    else if (category === "US-Pol") {
+      response = await axios.get("https://newsapi.org/v2/top-headlines?country=us&category=politics&apiKey=1d807c8f424748758e9d8a09c2e30d80");
+    }
+    else if (category === "US-Sports") {
+      response = await axios.get("https://newsapi.org/v2/top-headlines?country=us&category=sports&apiKey=1d807c8f424748758e9d8a09c2e30d80");
+    }
+    setData(response.data.articles);
+    if (response.data.articles.length > 0) {
+      setProperties(Object.keys(response.data.articles[0]));
+    }
+  };
 
-    useEffect(() => {
-        getNews();
-      }, []);
+  useEffect(() => {
+    getNews();
+  }, [category]);
 
-    // The seond useEffect sets the FilData but only if the data and properties parts change
-      useEffect(() => {
-        if (data.length > 0 && properties.length > 0) {
-          setFilData(data.filter(item =>
-            properties.every(prop => item[prop] !== undefined && item[prop] !== null)
-          ));
-        }
-      }, [data, properties]);
+  useEffect(() => {
+    if (data.length > 0 && properties.length > 0) {
+      setFilData(data.filter(item =>
+        properties.every(prop => item[prop] !== undefined && item[prop] !== null)
+      ));
+    }
+  }, [data, properties]);
 
+  const renderArticle = (index) => {
+    if (FilData.length > index) {
+      const article = FilData[index];
+      return (
+        <div className="articles" key={index}>
+          <img src={article.urlToImage} alt={article.title} />
+          <p className="title">{article.title}</p>
+          <p className="description">{article.description.slice(0, 20)}...<a href={article.url} target="_blank" rel="noopener noreferrer">Read More</a></p>
+          <p className="date">{new Date(article.publishedAt).toLocaleDateString()}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
-
-    const [category,setCategory]=useState("All")
-    const getNews=async() =>{
-        
-        if(category=="All"){
-            const response=await axios.get("https://newsapi.org/v2/everything?q=bitcoin&apiKey=1d807c8f424748758e9d8a09c2e30d80")
-            setData(response.data.articles)
-            if (response.data.articles.length > 0) {
-                setProperties(Object.keys(response.data.articles[0]));
-              }
-            console.log(data[0].title)
-        }
-        else if(category=="US-Ent"){
-            const response=await axios.get("https://newsapi.org/v2/top-headlines?country=us&category=entertainment&apiKey=1d807c8f424748758e9d8a09c2e30d80")
-            setData(response.data.articles)
-            if (response.data.articles.length > 0) {
-                setProperties(Object.keys(response.data.articles[0]));
-              }
-            console.log(data[0].title)
-        }
-        
-      }
-
-      console.log(FilData) 
-    //    console.log(properties)  
-    return(
-        
-        <div className="container">
-            <h1>Get Latest News</h1>
-            <div>
-                <button onClick={()=>setCategory("All")}>All</button>
-                <button onClick={()=>setCategory("US-Ent")}>US Entertainment</button>
-            </div>
-            <br></br>
-            <br></br>
-            {FilData.length>0 ? (
+  return (
+    <div className="container">
+      <div className="navbar">
+      <h3 id="name">Heated News</h3>
+      <p id="line">|</p>
+        <button className="nav-button" onClick={() => setCategory("All")}>All</button>
+        <button className="nav-button" onClick={() => setCategory("US-Ent")}>Entertainment</button>
+        <button  className="nav-button" onClick={() => setCategory("US-Pol")}>Politics</button>
+        <button className="nav-button" onClick={() => setCategory("US-Sports")}>Sports</button>
+      </div>
+      <div className="welcome">
+        <p>Welcome to Heated News</p>
+        <p id="catchy-intro">
+          Stay informed and stay ahead with <span style={{ color: 'red', fontWeight: 'bold' }}>Heated News—your go-to 
+          source</span> <FontAwesomeIcon icon={faBook}/> for the hottest headlines and breaking stories. 
+         Dive into the 
+          stories that matter with <span style={{ color: 'red', fontWeight: 'bold' }}>Heated News!</span> <FontAwesomeIcon icon={faFire}/>
+          </p>
+        {/* <h1>News Mayonnaise</h1> */}
+      </div>
+      <br></br>
+      <br></br>
+      {FilData.length > 0 ? (
         <div className="main-container">
-            <div className="articles">
-               <img src={FilData[increment-8].urlToImage} alt={FilData[increment-8].title}/> 
-               <p className="title">{FilData[increment-8].title}</p>
-               <p className="description">{FilData[increment-8].description.slice(0,20)}...<a>Read More</a></p>
-               <p className="date">{FilData[increment-8].publishedAt}</p>
-            </div>
-            <div className="articles">
-                <img src={FilData[increment-7].urlToImage} alt={FilData[increment-7].title}/>
-                <p className="title"> {FilData[increment-7].title}</p>
-                <p className="description">{FilData[increment-7].description.slice(0,20)}...<a>Read More</a></p>
-                <p className="date">{FilData[increment-7].publishedAt}</p>
-                </div>
-            <div className="articles">
-                <img src={FilData[increment-6].urlToImage} alt={FilData[increment-6].title}/>
-                <p className="title">{FilData[increment-6].title}</p>
-                <p className="description">{FilData[increment-6].description.slice(0,20)}...<a>Read More</a></p>
-                <p className="date">{FilData[increment-6].publishedAt}</p>
-                </div>
-            <div className="articles">
-                <img src={FilData[increment-5].urlToImage} alt={FilData[increment-5].title}/>
-                <p className="title">{FilData[increment-5].title}</p>
-                <p className="description">{FilData[increment-5].description.slice(0,20)}...<a>Read More</a></p>
-                <p className="date">{FilData[increment-5].publishedAt}</p>
-                </div>
-            <div className="articles">
-                <img src={FilData[increment-4].urlToImage} alt={FilData[increment-4].title}/>
-                <p className="title">{FilData[increment-4].title}</p>
-                <p className="description">{FilData[increment-4].description.slice(0,20)}...<a>Read More</a></p>
-                <p className="date">{FilData[increment-4].publishedAt}</p>
-            </div>
-            <div className="articles">
-                <img src={FilData[increment-3].urlToImage} alt={FilData[increment-3].title}/>
-                <p className="title">{FilData[increment-3].title}</p>
-                <p className="description">{FilData[increment-3].description.slice(0,20)}...<a>Read More</a></p>
-                <p className="date">{FilData[increment-3].publishedAt}</p>
-            </div>
-            <div className="articles">
-                <img src={FilData[increment-2].urlToImage} alt={FilData[increment-2].title}/>
-                <p className="title">{FilData[increment-2].title}</p>
-                <p className="description">{FilData[increment-2].description.slice(0,20)}...<a>Read More</a></p>
-                <p className="date">{FilData[increment-2].publishedAt}</p>
-            </div>
-            <div className="articles">
-                <img src={FilData[increment-1].urlToImage} alt={FilData[increment-1].title}/>
-                <p className="title">{FilData[increment-1].title}</p>
-                <p className="description">{FilData[increment-1].description.slice(0,20)}...<a>Read More</a></p>
-                <p className="date">{FilData[increment-1].publishedAt}</p>
-            </div>
+          {Array.from({ length: 8 }).map((_, i) => renderArticle(increment - 8 + i))}
         </div>
-        
-    ):(
+      ) : (
         <h1>No Data To Display</h1>
-    )}
-    <button className="next-button" onClick={()=>setIncrement(increment+8)}>Next</button>
-        </div>
-    )
+      )}
+      <button className="next-button" onClick={() => setIncrement(increment + 8)}>Next</button>
+    </div>
+  );
 }
+
 export default Home;
