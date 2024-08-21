@@ -4,13 +4,19 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import axios from 'axios'
 import Home from './home.jsx'
+import {BrowserRouter,Routes,Route} from 'react-router-dom'
+import Layout from './Layout.jsx'
 
 function App() {
 
-
   return (
     <>
-    <Home/>
+    <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Layout/>}/>
+      <Route index element={<Home/>}/>
+    </Routes>
+    </BrowserRouter>
     </>
   )
 }
