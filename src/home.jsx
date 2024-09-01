@@ -15,6 +15,8 @@ function Home() {
   const [FilData, setFilData] = useState([]);
   const [category, setCategory] = useState("everything");
   const [search,setSearch]=useState("")
+  const [seeMore,setSeeMore]=useState(12)
+  const [back,setBack]=useState(12)
   // const navigate=useNavigate()
   const getNews = async (category) => {
     let response;
@@ -40,6 +42,34 @@ function Home() {
     getNews(category);
   },[category]);
 
+  const handleAll=(()=>{
+    if(category==="everything"){
+      return {border:"2px solid black",backgroundColor:"orange"}
+    }
+      
+  })
+
+  const handleMore=(()=>{
+    setSeeMore(seeMore+12)
+  })
+  const handleEntrtainment=(()=>{
+    if(category==="entertainment"){
+      return {border:"2px solid black",backgroundColor:"orange"}
+    }
+    
+})
+const handlePolitics=(()=>{
+  if(category==="politics"){
+    return {border:"2px solid black",backgroundColor:"orange"}
+  }
+  
+})
+const handleSports=(()=>{
+  if(category==="sports"){
+    return {border:"2px solid black",backgroundColor:"orange"}
+  }
+  
+})
  
 
   // console.log("Data:",data)
@@ -49,9 +79,8 @@ function Home() {
       const articles=data.filter((record)=>record.title.toLowerCase().includes(search.toLowerCase()))
       console.log("Article:",articles.length)
       return (
-        articles.map((article,index) => (
+        articles.slice(seeMore-12,seeMore).map((article,index) => (
         <div className="card" style={{width: "13rem",height:"15rem"}} key={index}>
-          {/* <p>{index}</p> */}
           <img src={article.urlToImage} className="card-img-top" alt={article.title.slice(0,50)}/>
           <div className="card-body">
             <h5 className="card-title">{article.title}</h5>
@@ -72,6 +101,7 @@ function Home() {
             <EmailShareButton url={window.location.href}>
                 <EmailIcon size={28} style={{borderRadius:"15px",marginRight:"4px"}}/>
             </EmailShareButton>
+
       </div>
       )));
     }
@@ -84,10 +114,10 @@ function Home() {
       <div className="navbar">
       <h3 id="name">Heated News</h3>
       <p id="line">|</p>
-        <button className="nav-button" onClick={() => setCategory("everything")}>All</button>
-        <button className="nav-button" onClick={() => setCategory("entertainment")}>Entertainment</button>
-        <button  className="nav-button" onClick={() => setCategory("politics")}>Politics</button>
-        <button className="nav-button" onClick={() => setCategory("sports")}>Sports</button>
+        <button className="nav-button" onClick={() => setCategory("everything")} style={handleAll()}>All</button>
+        <button className="nav-button" onClick={() => setCategory("entertainment")} style={handleEntrtainment()}>Entertainment</button>
+        <button  className="nav-button" onClick={() => setCategory("politics")} style={handlePolitics()}>Politics</button>
+        <button className="nav-button" onClick={() => setCategory("sports")} style={handleSports()}>Sports</button>
         <input onChange={(event)=>setSearch(event.target.value)} placeholder="Search..." style={{height:"38px"}}></input>
       </div>
       <div className="welcome">
@@ -105,6 +135,12 @@ function Home() {
       {data.length > 0 ? (
         <div className="main-container">
           {renderArticle()}
+          <button style={{backgroundColor:"orange",position:"fixed",right:"60px",bottom:"74px"}} onClick={()=>handleMore()}>Next</button>
+          {seeMore>12 ?(
+            <button style={{backgroundColor:"orange",position:"fixed",left:"60px",bottom:"74px"}} onClick={()=>setSeeMore(seeMore-back)}>Back</button>
+          ):(
+            <p></p>
+          )}
         </div>
       ) : (
         <h1>No Data To Display</h1>
